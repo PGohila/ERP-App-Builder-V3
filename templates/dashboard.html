@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+
+{% block body_block %}
+{% load static %}
+<style>
+    
+</style>
+
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            
+            <h1 class="app-page-title"></h1>
+            <form method="post">
+                {% csrf_token %}
+            <div class="row">
+                <h3 class="mb-3">Welcome..!</h3 class="mb-3">
+            </div>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="info-card screens-card" style="border-radius: 10px; background-image: linear-gradient(to right, #4e54c8, #8f94fb); color: white; text-align: center;">
+                        <!-- Visually appealing header content -->
+                        <div style="padding: 20px;">
+                            <i class="bi bi-laptop" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                            <h3 class="card-title text-white" style="font-size: 1.8rem; font-weight: bold;">Total Screens</h3>
+                            <p class="card-subtitle" style="font-size: 2rem;">{{ screen_count }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="info-card tables-card" style="border-radius: 10px; background-image: linear-gradient(to right, #ff8a00, #da1b60); color: white; text-align: center;">
+                        <!-- Visually appealing header content -->
+                        <div style="padding: 20px;">
+                            <i class="bi bi-table" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                            <h3 class="card-title text-white" style="font-size: 1.8rem; font-weight: bold;">Total DB Tables</h3>
+                            <p class="card-subtitle" style="font-size: 2rem;">{{ table_count }} </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="info-card screens-card" style="border-radius: 10px; background-image: linear-gradient(to right, #4e54c8, #8f94fb); color: white; text-align: center;">
+                        <!-- Visually appealing header content -->
+                        <div style="padding: 20px;">
+                            <i class="bi bi-laptop" style="font-size: 3rem; margin-bottom: 10px;"></i>
+                            <h3 class="card-title text-white" style="font-size: 1.8rem; font-weight: bold;">Total Fields</h3>
+                            <p class="card-subtitle" style="font-size: 2rem;">{{field_count}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            
+        </form>
+        </div><!--//container-fluid-->
+    </div><!--//app-content-->
+</div>
+
+{% endblock %}
+{% block script_block %}
+
+{% endblock  %}

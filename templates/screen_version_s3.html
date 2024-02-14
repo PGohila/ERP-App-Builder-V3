@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+
+<head>
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+  <script src='https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js'></script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <!-- Template Main CSS File -->
+
+  <link href="{% static 'assets/assets/css/style.css' %}" rel="stylesheet">
+  <link id="theme-style" rel="stylesheet" href="{% static 'assets/css/portal.css' %}">
+
+ <style>
+  #disabled {
+    background-color: rgb(255, 255, 255);
+  }
+ </style>
+</head>
+
+
+<body style="background-color: whitesmoke;">
+  <div class="app-wrapper">
+    <div class="container-fluid">
+      <main id="main" class="main">
+
+        <div class="pagetitle"><br><br>
+          <!-- <h3>{{screen_name}}</h3> -->
+          <div class="col-12">
+            <h2>Double-tap the label to edit:</h2>
+            <p>Drag and drop fields to change their position.</p>
+            <p>Edit labels to change the displayed text.</p>
+        </div>
+
+        </div><!-- End Page Title -->
+
+        <section class="section dashboard">
+          
+          <form  method="post">
+            {% csrf_token %}
+          <div class="row">
+            <div class="col-lg-10">
+              <hr>
+          <h4>{{screen_name}}</h4>
+              <div class="row right-side" id="sortable">
+                
+                {% for field in screen_version_field %}
+                <div class="col-{{field.column_size}} p-2" id="4">
+                  <div class="card">
+                  <label class="p-2"  ondblclick="editLabel(this)">{% if field.label_name %}{{field.label_name}}{% else %}{{field.field.field_name}}{% endif %}</label>
+                  <input type="hidden"  value="{% if field.label_name %}{{field.label_name}}{% else %}{{field.field.field_name}}{% endif %}" name="label">
+                  <input type="hidden"  value="{{field.id}}" name="field_id">
+                  <input type="{{field.field.field_type}}" id="disabled" disabled class="form-control">
+                  </div>
+                </div><br>
+                {% endfor %}
+               
+              </div>
+            </div><!-- End Left side columns -->
+          </div>
+          <a href="{% url 'screen_version_s2' screen_version_id %}" class="btn btn-warning">Back</a>
+          <button type="submit" class="btn btn-primary">Next</button>
+        </form><br><br>
+        </section>
+
+      </main><!-- End #main -->
+
+      <script>
+        function editLabel(label) {
+            var currentValue = label.textContent;
+            var newValue = prompt('Edit Label:', currentValue);
+    
+            // Update the label text if a new value is provided
+            if (newValue !== null) {
+                label.textContent = newValue;
+    
+                // Find the associated input field and update its value
+                var inputField = label.nextElementSibling; // Assuming the input is the next sibling element
+                if (inputField && inputField.tagName === 'INPUT') {
+                    inputField.value = newValue;
+                }
+            }
+        }
+    </script>
+
+      <!-- Vendor JS Files -->
+      <script src="{% static 'assets/assets/vendor/apexcharts/apexcharts.min.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/chart.js/chart.umd.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/echarts/echarts.min.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/quill/quill.min.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/simple-datatables/simple-datatables.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/tinymce/tinymce.min.js' %}"></script>
+      <script src="{% static 'assets/assets/vendor/php-email-form/validate.js' %}"></script>
+
+      <script>
+        $(document).ready(function () {
+          $("#sortable").sortable();
+          $("#sortable").disableSelection();
+
+          $("#sortable1").sortable();
+          $("#sortable1").disableSelection();
+        });
+      </script>
+  
+</body>
+
+</html>

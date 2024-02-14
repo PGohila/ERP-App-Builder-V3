@@ -1,0 +1,28 @@
+<!-- widgets/render_widgets.html -->
+<h1>{{ screen.screen_name }}</h1>
+
+<!-- Display Cards -->
+{% for card in cards %}
+    <div class="col-md-{{ card.size_in_number }}">
+        <div class="card bg-{{ card.color_code }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ card.card_title }}</h5>
+                {{ card.card_description|safe }}
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<!-- Display Buttons -->
+{% for button in buttons %}
+    <a href="{{ button.url_link }}" class="btn btn-{{ button.color_code }}">{{ button.button_name }}</a>
+{% endfor %}
+
+<!-- Display Alerts -->
+{% for alert in alerts %}
+    <div class="alert alert-{{ alert.color_code }}" role="alert">
+        {{ alert.message }}
+    </div>
+{% endfor %}
+
+<!-- Add code to display other widgets here -->

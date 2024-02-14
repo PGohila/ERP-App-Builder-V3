@@ -1,0 +1,26 @@
+from django.contrib import admin
+from sub_part.models import *
+
+# Register your models here.
+admin.site.register(Project)
+admin.site.register(Screen)
+admin.site.register(Table)
+admin.site.register(Field)
+admin.site.register(Argument)
+admin.site.register(View)
+admin.site.register(Form)
+admin.site.register(Widget)
+admin.site.register(Alert)
+admin.site.register(A_Button)
+admin.site.register(Button)
+admin.site.register(Card)
+admin.site.register(Dropdown)
+admin.site.register(Input)
+admin.site.register(Modal)
+admin.site.register(FormWidget)
+admin.site.register(FieldSize)
+admin.site.register(ScreenVersion)
+admin.site.register(UserTypeMaster)      
+admin.site.register(MainSubMenu)
+admin.site.register(SubMenu)
+admin.site.register(Model_Identification)

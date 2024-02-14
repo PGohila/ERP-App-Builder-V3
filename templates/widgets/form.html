@@ -1,0 +1,37 @@
+<style>
+  .table-responsive {
+       /* Enable horizontal scrolling */
+      max-width: 100%; /* Set maximum width */
+      margin-bottom: 1rem; /* Add some margin to prevent content from sticking to the bottom */
+  }
+</style>
+<div class="col-md-<**Coloumn_size**>">
+    <div class="card p-3" >
+        <div class="main-header">
+            <h4>
+               <**Input_form_heading**>
+               {% if view %}
+               view
+               {% elif edit %}
+               Edit
+               {% endif %}
+
+             </h4>
+         </div><hr>
+         <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+         <div class="row">
+            {% for data in form %}
+            <div class="col-md-12 mb-3">
+                {{data.label_tag}}
+              {{ data }}
+            </div>
+            {% endfor %}
+          </div>
+          {% if not view %}
+          <br>
+          <button type="submit" class="btn btn-primary text-white" style="float: right;">Save</button>
+          {% endif %}
+        </form>
+    </div>
+  </div>

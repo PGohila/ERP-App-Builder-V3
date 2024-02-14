@@ -1,0 +1,129 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %}
+{% block head_block %}
+<style>
+    input[type="checkbox"] {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    input[type="checkbox"] {
+        border: 2px solid blueviolet;
+        color: green;
+        /* color set here so that Windows' High-Contrast Mode can override */
+        height: 1.1em;
+        position: relative;
+        width: 1.1em;
+        vertical-align: -5px;
+        /* adjusts the position of the checkboxes on the text baseline */
+    }
+
+    input[type="checkbox"]::before {
+        color: violet;
+        content: "✔";
+        font-size: 1em;
+        position: absolute;
+        right: -1px;
+        top: -0.2em;
+        visibility: hidden;
+    }
+
+    input[type="checkbox"]:checked::before {
+        /* use `visibility` instead of `display` to avoid recalculating layout */
+        visibility: visible;
+    }
+
+    input[type="checkbox"]:disabled {
+        background: darkgrey;
+        border-color: rgb(175, 129, 175);
+        color: gray;
+    }
+</style>
+<style>
+    .disabled-field {
+        filter: blur(4px); /* You can adjust the blur amount as needed */
+    }
+</style>
+{% endblock %}
+{% block body_block %}
+{% load static %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body" id="dynamicForm">
+            <h5 class="card-title">Select Fields:</h5><br>
+
+            <form method="post" id="form_id">
+                {% csrf_token %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Field Names</th>
+                            <th>Column size</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% comment %} {% for data in fields %}
+                        {% for field in screen_version_fields %}
+                        {% if field.field == data %}
+                            <tr>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="field" value="{{data.id}}" onchange="updateInput(this, '{{data.id}}')">
+                                        {{data.field_name}}
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="number" class="form-control disabled-field" name="column_size_{{data.id}}" placeholder="column size" value="12" min="1" max="12" readonly>
+                                </td>
+                        {% endfor %}
+                        {% endfor %} {% endcomment %}
+                        {% for new_field,exisiting_field in NewFields_and_ExisitingFields %}
+                            <tr>
+                                <td>
+                                    <label>
+                                        <input type="checkbox" name="field" value="{{new_field.id}}" {% if exisiting_field %}checked{% endif %} onchange="updateInput(this, '{{new_field.id}}')">
+                                        {% if exisiting_field %}{{exisiting_field.label_name}}{% else %}{{new_field.field_name}}{% endif %}
+                                    </label>
+                                </td>
+                                <td>
+                                    {% if not exisiting_field %}
+                                    <input type="number" class="form-control  disabled-field" name="column_size_{{new_field.id}}" placeholder="column size" value="12" min="1" max="12" readonly>
+                                    {% else %}
+                                    <input type="number" class="form-control" name="column_size_{{new_field.id}}" placeholder="column size" value="{{exisiting_field.column_size}}" min="1" max="12" >
+                                    {% endif %}
+                                </td>
+                            </tr>
+                    {% endfor %}
+
+
+                    </tbody>
+                </table>
+            </form>
+
+            <div id="fieldsContainer"></div>
+            <!-- Change type to "button" to prevent form submission -->
+            <button type="submit" form="form_id" class="btn btn-primary">Next</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateInput(checkbox, dataId) {
+        var inputField = checkbox.closest('tr').querySelector('input[name="column_size_' + dataId + '"]');
+        
+        if (checkbox.checked) {
+            inputField.removeAttribute('readonly');
+            inputField.classList.remove('disabled-field');
+            inputField.setAttribute('required', 'required');
+        } else {
+            inputField.setAttribute('readonly', 'readonly');
+            inputField.classList.add('disabled-field');
+            inputField.removeAttribute('required');
+        }
+    }
+</script>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

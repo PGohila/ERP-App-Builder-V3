@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+
+            <h3><span class="text-info">Screen Name:</span> {{ screen.screen_name }}</h3>
+            <div class="card col-md-12  p-3">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="p-4" style="background-color: rgb(240, 255, 251);">
+                        <div class="mb-3 ">
+                            <label for="screen_version_name">Screen Version Name:</label>
+                            <input type="text" name="screen_version_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3 ">
+                            <label for="screen_version_name">User Type:</label>
+                            <select name="user_type" id="id_user_type" class="form-control">
+                                <option value="">Select</option>
+                                {% for data in user_type %}
+                                <option value="{{data.id}}">{{data.user_type}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div><br><br>
+                    <button type="submit" class="btn btn-primary" style="float: right;">Next</button>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

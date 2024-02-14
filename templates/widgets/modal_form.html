@@ -1,0 +1,46 @@
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-<**button_color**>" data-bs-toggle="modal" data-bs-target="#<**Button_id**>">
+    <**Button_name**>
+</button>
+
+<!-- Modal -->
+<div class="modal fade"  id="<**Button_id**>" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-<**Modal_Size**>">
+        <div class="modal-content" style="background-color:<**modal_color**>;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    <**Modal_title**>
+                        {% if view %}
+                        view
+                        {% elif edit %}
+                        Edit
+                        {% endif %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <div class="card p-3">
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                {% for data in form %}
+                                <div class="col-md-12 mb-3">
+                                    {{data.label_tag}}
+                                    {{ data }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if not view %}
+                            <br>
+                            <button type="submit" class="btn btn-primary text-white"
+                                style="float: right;">Save</button><br><br>
+                            {% endif %}
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

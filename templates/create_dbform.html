@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+    <h5>Add Table for {{get_project_detail}} Project</h5>
+    <div class="card col-md-12  p-3">
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="screen_name">{{ screen_form.name.label_tag }}</label>
+                {{ screen_form.name }}
+                
+            </div>
+            <div class="form-group d-none">
+                <label for="screen_name">{{ screen_form.project.label_tag }}</label>
+                <select name="project" class="form-control" required id="id_project">
+                    <option value="{{get_project_detail.id}}" selected>{{get_project_detail}}</option>                            
+                  </select>
+                
+            </div>
+       
+    
+            <h5>Fields</h5>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Field Name</th>
+                        <th>Field Type</th>
+                        <th>Max Length</th>
+                        <th>Required</th>
+                    </tr>
+                </thead>
+                <tbody id="fields-container">
+                    <!-- JavaScript will add fields here -->
+                </tbody>
+            </table>
+            <div class="row">
+                <div class="col-md-2 mb-3">
+                    <button type="button" class="btn btn-primary text-white" id="add-field">Add Field</button>
+                </div>
+                <div class="col-md-2 mb-3">
+                    <button type="button" class="btn btn-danger text-white" id="remove-field">Remove_Field</button>
+                </div>
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary text-white" style="float: right">Create Screen</button>
+            <!-- Hidden input to keep track of the number of fields -->
+            <input type="hidden" id="id_field_count" name="field_count" value="0">
+        </form>
+    </div>
+    
+
+    <div class="card p-3 mt-3">
+        <!-- <h5>List of Database Tables</h5>
+        <ul>
+            {% for screen in screens %}
+                <li><a href="{% url 'edit_screen' screen.id %}">{{ screen.screen_name }}</a></li>
+            {% endfor %}
+        </ul> -->
+       <table id="tableID" class="display">
+        <thead style="background-color: rgb(231, 252, 231);" class="mt-3">
+            <tr>
+                <th>Table Name</th>
+                <th>Field Name</th>
+                <th>Field Type</th>
+                <th>Max Length</th>
+                <th>Required</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for table, records in table_fields_record.items %}
+                {% for data in records %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td rowspan="{{ records|length }}">
+                                {{ table }}
+                            </td>
+                        {% endif %}
+                        <td>{{ data.field_name }}</td>
+                        <td>{{ data.field_type }}</td>
+                        <td>{{ data.max_length }}</td>
+                        <td>{{ data.required }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+            <tr>
+                
+            </tr>
+        </tbody>
+    </table>
+    
+       </div>
+       </div>
+       </div>
+       </div>
+
+    {% endblock %}
+    {% block script_block %}
+
+
+
+    <!-- ... your existing HTML ... -->
+    
+    <script>
+        const table_list = {{ table_list|safe }};
+        const tableid_list = {{tableid_list|safe}};
+    </script>
+    <script>
+       
+        const fieldTypes = ['-- select --','CharField', 'IntegerField', 'BooleanField', 'DateField', 'DateTimeField',
+            'FileField', 'FloatField','DecimalField', 'ForeignKey', 'GenericIPAddressField', 'ImageField', 
+            'ManyToManyField', 'OneToOneField', 'TextField', 'TimeField'];
+    
+        const RequiredTypes = ['Required', 'non-Required'];
+    
+        document.getElementById('add-field').addEventListener('click', function () {
+            const fieldsContainer = document.getElementById('fields-container');
+            const fieldCountInput = document.getElementById('id_field_count');
+            const fieldRow = document.createElement('tr');
+    
+            // Field Name
+            const fieldNameCell = document.createElement('td');
+            const fieldNameInput = document.createElement('input');
+            const rowNumber = parseInt(fieldCountInput.value); // Get the row number
+            fieldNameInput.type = 'text';
+            fieldNameInput.name = `field_name`;  // Include an index
+            fieldNameInput.placeholder = 'Field Name';
+            fieldNameInput.classList.add('form-control', 'mb-3');
+            fieldNameCell.appendChild(fieldNameInput);
+    
+            // Field Type Dropdown
+            const fieldTypeCell = document.createElement('td');
+            const fieldTypeSelect = document.createElement('select');
+            fieldTypeSelect.name = `field_type`; // Include an index
+            fieldTypeSelect.classList.add('form-control');
+            for (const type of fieldTypes) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.text = type;
+                fieldTypeSelect.appendChild(option);
+            }
+            fieldTypeSelect.addEventListener('change', function () {
+                handleFieldTypeChange(this, fieldRow,rowNumber);
+            });
+            fieldTypeCell.appendChild(fieldTypeSelect);
+    
+            // Additional Fields Cell
+            const additionalFieldCell = document.createElement('td');
+    
+            // Required Dropdown
+            const requiredCell = document.createElement('td');
+            const requiredSelect = document.createElement('select');
+            requiredSelect.name = `required`; // Include an index
+            requiredSelect.classList.add('form-control');
+            for (const type of RequiredTypes) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.text = type;
+                requiredSelect.appendChild(option);
+            }
+            requiredCell.appendChild(requiredSelect);
+    
+            // Append cells to the row
+            fieldRow.appendChild(fieldNameCell);
+            fieldRow.appendChild(fieldTypeCell);
+            fieldRow.appendChild(additionalFieldCell); // Placeholder for additional fields
+            fieldRow.appendChild(requiredCell);
+    
+            fieldsContainer.appendChild(fieldRow);
+            // Increment the field count
+            fieldCountInput.value = parseInt(fieldCountInput.value) + 1;
+        });
+    
+        document.getElementById('remove-field').addEventListener('click', function () {
+            const fieldsContainer = document.getElementById('fields-container');
+            const fieldRows = fieldsContainer.querySelectorAll('tr');
+            if (fieldRows.length > 0) {
+                fieldsContainer.removeChild(fieldRows[fieldRows.length - 1]);
+                // Decrement the field count
+                const fieldCountInput = document.getElementById('id_field_count');
+                fieldCountInput.value = parseInt(fieldCountInput.value) - 1;
+            }
+        });
+    
+        function handleFieldTypeChange(selectElement, fieldRow,rowNumber) {
+            const selectedFieldType = selectElement.value;
+            const additionalFieldCell = fieldRow.children[2]; // Cell for additional fields
+    
+            // Clear existing content
+            additionalFieldCell.innerHTML = '';
+            switch (selectedFieldType) {
+                case 'BooleanField':
+                    // Checkbox field
+            
+                    createCheckboxField('checkbox_'+rowNumber, 'Checkbox', additionalFieldCell);
+                    break;
+                case 'CharField':
+                    // Max Length and Help Text fields
+                    createInputField('Max Length', 'max_length_'+rowNumber, 'number', additionalFieldCell);
+                    createInputField('Help Text', 'help_text_'+rowNumber, 'text', additionalFieldCell);
+                    break;
+                case 'DateField':
+                    // Handle DateField specific fields
+                    createInputField('Date Format', 'date_format_'+rowNumber, 'text', additionalFieldCell);
+                    createCheckboxField('auto_now_checkbox_'+rowNumber, 'Auto Now', additionalFieldCell);
+                    break;
+                case 'DateTimeField':
+                    // Handle DateTimeField specific fields
+                    createCheckboxField('auto_now_checkbox_'+rowNumber, 'Auto Now', additionalFieldCell);
+                    break;
+                case 'DecimalField':
+                    // Handle DecimalField specific fields
+                    createInputField('Max Digits', 'max_digits_'+rowNumber, 'number', additionalFieldCell);
+                    createInputField('Decimal Places', 'decimal_places_'+rowNumber, 'number', additionalFieldCell);
+                    break;
+                case 'FileField':
+                    // Handle FileField specific fields
+                    createInputField('File Upload Limit', 'file_limit_'+rowNumber, 'number', additionalFieldCell);
+                    break;
+                // case 'FloatField':
+                //     // Handle FloatField specific fields
+                //     createInputField('Max Digits', 'max_digits_'+rowNumber, 'number', additionalFieldCell);
+                //     createInputField('Decimal Places', 'decimal_places_'+rowNumber, 'number', additionalFieldCell);
+                //     break;
+                case 'ForeignKey':
+                    // Handle ForeignKey specific fields
+                    createDropdownField('table_name_'+rowNumber, 'Table Name', table_list,tableid_list, additionalFieldCell,);
+                    break;
+                case 'GenericIPAddressField':
+                    // Handle GenericIPAddressField specific fields
+                    createInputField('Protocol', 'ip_protocol_'+rowNumber, 'text', additionalFieldCell);
+                    break;
+                case 'ImageField':
+                    // Handle ImageField specific fields
+                    createInputField('Image Height', 'image_height_'+rowNumber, 'number', additionalFieldCell);
+                    createInputField('Image Width', 'image_width_'+rowNumber, 'number', additionalFieldCell);
+                    break;
+                case 'IntegerField':
+                    // Min Length field
+                    createInputField('Min Length', 'min_length_'+rowNumber, 'number', additionalFieldCell);
+                    break;
+                // case 'IPAddressField':
+                //     // Handle IPAddressField specific fields
+                //     createInputField('Protocol', 'ip_protocol_'+rowNumber, 'text', additionalFieldCell);
+                //     break;
+                case 'ManyToManyField':
+                    // Handle ManyToManyField specific fields
+                    createDropdownField('many_to_many_'+rowNumber, 'Table Name', table_list,tableid_list, additionalFieldCell);
+                    break;
+                case 'OneToOneField':
+                    // Handle OneToOneField specific fields
+                    createDropdownField('one_to_one_'+rowNumber, 'Table Name', table_list,tableid_list, additionalFieldCell);
+                    break;
+                case 'PositiveIntegerField':
+                    // Handle PositiveIntegerField specific fields
+                    createInputField('Max Length', 'max_length_'+rowNumber, 'number', additionalFieldCell);
+                    break;
+                // case 'TextField':
+                //     // Handle TextField specific fields
+                //     createCheckboxField('allow_markdown_checkbox_'+rowNumber, 'Allow Markdown', additionalFieldCell);
+                //     break;
+                case 'TimeField':
+                    // Handle TimeField specific fields
+                    createCheckboxField('use_seconds_checkbox_'+rowNumber, 'Use seconds', additionalFieldCell);
+                    break;
+                default:
+                    // Clear if not handled
+                    additionalFieldCell.innerHTML = '';
+                    break;
+            }
+        }
+    
+        function createInputField(label, name, type, container) {
+            const labelElement = document.createElement('label');
+            labelElement.textContent = label;
+    
+            const inputElement = document.createElement('input');
+            inputElement.type = type;
+            inputElement.name = name;
+            inputElement.placeholder = label;
+            inputElement.classList.add('form-control', 'mb-3');
+    
+            const divWrapper = document.createElement('div');
+            divWrapper.classList.add('form-group');
+            divWrapper.appendChild(labelElement);
+            divWrapper.appendChild(inputElement);
+    
+            container.appendChild(divWrapper);
+        }
+    
+        function createCheckboxField(name, label, container,rowNumber) {
+            const checkboxElement = document.createElement('input');
+            checkboxElement.type = 'checkbox';
+            checkboxElement.name = name;
+    
+            const labelElement = document.createElement('label');
+            labelElement.textContent = label;
+    
+            const divWrapper = document.createElement('div');
+            divWrapper.classList.add('form-group');
+            divWrapper.appendChild(checkboxElement);
+            divWrapper.appendChild(labelElement);
+    
+            container.appendChild(divWrapper);
+        }
+    
+        function createDropdownField(name, label, options,option_id, container) {
+    const selectElement = document.createElement('select');
+    selectElement.name = name;
+    selectElement.classList.add('form-control');
+
+    // Add an initial --select-- option
+    const defaultOption = document.createElement('option');
+    defaultOption.value = '';
+    defaultOption.text = 'Select DB Table';
+    selectElement.appendChild(defaultOption);
+
+    // Create options for the select element
+
+    for (const [index, option] of options.entries()) {
+        const optionElement = document.createElement('option');
+        optionElement.value = option_id[index]; // Assuming optionIds corresponds to option values
+        optionElement.text = option;
+        selectElement.appendChild(optionElement);
+    }
+
+    const labelElement = document.createElement('label');
+    labelElement.textContent = label;
+
+    const divWrapper = document.createElement('div');
+    divWrapper.classList.add('form-group');
+    // divWrapper.appendChild(labelElement);
+    divWrapper.appendChild(selectElement);
+
+    container.appendChild(divWrapper);
+}
+
+    </script>
+    
+
+
+    {% endblock  %}

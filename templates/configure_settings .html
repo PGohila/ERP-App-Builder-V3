@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configure Settings</title>
+</head>
+<body>
+    <h1>Configure Settings</h1>
+    <form action="{% url 'configure_settings' %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Configure Settings</button>
+    </form>
+    
+</body>
+</html>

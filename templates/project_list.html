@@ -1,0 +1,13 @@
+{% extends "base.html "%}
+{% load static %}
+{% block body_block %}
+    <div class="container-fluid">
+        <h4>Project List</h4>
+        <ul>
+       
+        <li><a href="{% url 'project_download' project_list %}">{{ project_list }}</a></li>
+      
+        </ul>
+</div>
+{% endblock %}
+

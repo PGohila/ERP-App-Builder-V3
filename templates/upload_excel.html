@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+    <h5>Uplaod Your file</h5>
+    {% if error_message %}
+    <p style="color: red;">{{ error_message }}</p>
+  {% endif %}
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- {{ form.as_p }} -->
+    <button type="submit" class="btn btn-primary text-white">Upload</button>
+    <!-- <a href="{% url 'demo_excel_export' %}">Export Data to Excel</a> -->
+  </form>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock  %}

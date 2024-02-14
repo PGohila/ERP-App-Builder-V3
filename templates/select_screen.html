@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+    <h5>Select the Screen</h5>
+   <div class="card col-md-12  p-3">   
+    <!-- select_screen.html -->
+    <form method="post" action="{% if form.selected_screen_id.value %}{% url 'preview_screen' screen_id=form.selected_screen_id.value %}{% endif %}">
+        {% csrf_token %}
+    <!-- <div class="form-container">
+        <select class="form-control" name="selected_screen_id" onchange="this.form.submit()">
+            <option value="">---Select----</option>
+            {% for data in screen_records  %}
+                <option value="{{data.id}}" {% if form.selected_screen_id == data.id %}selected{% endif %}>{{data.screen_name}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-12 mt-3">
+        <button type="submit" class="btn btn-primary text-white" style="float:right">Preview</button>
+    </div> -->
+</form>
+    <div class="form-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>S.no</th>
+                    <th>Screen Name</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in screen_records %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>{{data.screen_name}}</td>
+                    <td><a href="/screen_version_list/{{data.id}}/" class="btn btn-info">View</a></td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    
+    </div>
+    
+    </div>
+    </div>
+    </div>
+
+    
+    {% endblock %}
+    {% block script_block %}
+    {% endblock  %}

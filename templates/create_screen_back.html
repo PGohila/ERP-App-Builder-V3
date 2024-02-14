@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Screen</title>
+</head>
+<body>
+    <h1>Create a New Screen</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ screen_form.as_p }}
+
+        <h2>Fields</h2>
+        <div id="fields-container">
+            <!-- JavaScript will add fields here -->
+        </div>
+        <button type="button" id="add-field">Add Field</button>
+        <button type="button" id="remove-field">Remove Field</button>
+
+        <button type="submit">Create Screen</button>
+        <!-- Hidden input to keep track of the number of fields -->
+        <input type="hidden" id="id_field_count" name="field_count" value="0">
+    </form>
+
+    <script>
+        const fieldTypes = ['CharField', 'IntegerField', 'BooleanField', 'DateField', 'EmailField', 'URLField', '...'];
+
+        document.getElementById('add-field').addEventListener('click', function () {
+            const fieldsContainer = document.getElementById('fields-container');
+            const fieldCountInput = document.getElementById('id_field_count');
+            const fieldGroup = document.createElement('div');
+            fieldGroup.className = 'field-group';
+
+            // Field Name
+            const fieldNameInput = document.createElement('input');
+            fieldNameInput.type = 'text';
+            fieldNameInput.name = `field_name`;  // Include an index
+            fieldNameInput.placeholder = 'Field Name';
+            fieldGroup.appendChild(fieldNameInput);
+
+            // Field Type Dropdown
+            const fieldTypeSelect = document.createElement('select');
+            fieldTypeSelect.name = `field_type`;  // Include an index
+            for (const type of fieldTypes) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.text = type;
+                fieldTypeSelect.appendChild(option);
+            }
+            fieldGroup.appendChild(fieldTypeSelect);
+
+            // Max Length
+            const maxLengthInput = document.createElement('input');
+            maxLengthInput.type = 'number';
+            maxLengthInput.name = `max_length`;  // Include an index
+            maxLengthInput.placeholder = 'Max Length';
+            fieldGroup.appendChild(maxLengthInput);
+
+            // Required Checkbox
+            const requiredCheckbox = document.createElement('input');
+            requiredCheckbox.type = 'checkbox';
+            requiredCheckbox.name = `required`;  // Include an index
+            fieldGroup.appendChild(requiredCheckbox);
+
+            fieldsContainer.appendChild(fieldGroup);
+            // Increment the field count
+            fieldCountInput.value = parseInt(fieldCountInput.value) + 1;
+        });
+
+        document.getElementById('remove-field').addEventListener('click', function () {
+            const fieldsContainer = document.getElementById('fields-container');
+            const fieldGroups = fieldsContainer.querySelectorAll('.field-group');
+            if (fieldGroups.length > 0) {
+                fieldsContainer.removeChild(fieldGroups[fieldGroups.length - 1]);
+                // Decrement the field count
+                const fieldCountInput = document.getElementById('id_field_count');
+                fieldCountInput.value = parseInt(fieldCountInput.value) - 1;
+            }
+        });
+    </script>
+</body>
+</html>

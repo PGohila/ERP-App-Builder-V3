@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- This script got from frontendfreecode.com -->
+
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css'>
+<script src='https://stackpath.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.bundle.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<style>
+.stretch-card>.card {
+    width: 100%;
+    min-width: 100%
+}
+
+body {
+    background-color: #f9f9fa
+}
+
+.flex {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto
+}
+
+@media (max-width:991.98px) {
+    .padding {
+        padding: 1.5rem
+    }
+}
+
+@media (max-width:767.98px) {
+    .padding {
+        padding: 1rem
+    }
+}
+
+.padding {
+    padding: 3rem !important
+}
+
+.card {
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
+    box-shadow: 0 1px 20px 0 rgba(69, 90, 100, 0.08);
+    border: none;
+    margin-bottom: 30px
+}
+
+.card .card-header {
+    background-color: transparent;
+    border-bottom: none;
+    padding: 25px 20px
+}
+
+.card .card-header+.card-block,
+.card .card-header+.card-block-big {
+    padding-top: 0
+}
+
+.card-block {
+    padding: 1.25rem;
+    background-color: #fff
+}
+
+.m-b-20 {
+    margin-bottom: 20px
+}
+
+.card-sub {
+    cursor: move;
+    border: none;
+    -webkit-box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.05), 0 -2px 1px -2px rgba(0, 0, 0, 0.04), 0 0 0 -1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 0 1px 2px rgba(0, 0, 0, 0.05), 0 -2px 1px -2px rgba(0, 0, 0, 0.04), 0 0 0 -1px rgba(0, 0, 0, 0.05)
+}
+
+.card-block {
+    padding: 1.25rem;
+    background-color: #fff
+}
+</style>
+
+</head>
+<body>
+<div class="page-content page-container" id="page-content">
+    <div class="padding">
+        <div class="row container-fluid d-flex justify-content-center">
+            <div class="col-lg-12 col-xl-6">
+                <!-- Draggable Without Images card start -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-header-text">Draggable Grid with cards</h5>
+                    </div>
+                    <div class="card-block">
+                        <div class="row" id="sortable">
+                            <div class="col-6 m-b-20" draggable="false" style="">
+                                <div class="card-sub"> <img class="card-img-top img-fluid" src="http://frontendfreecode.com/codes/files/card1.jpg" alt="Card image cap">
+                                    <div class="card-block">
+                                        <h4 class="card-title">Product 1</h4>
+                                        <p class="card-text">That might be little bit risky to have crew member like them.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card-sub m-b-20"> <img class="card-img-top img-fluid" src="http://frontendfreecode.com/codes/files/card2.jpg" alt="Card image cap">
+                                    <div class="card-block">
+                                        <h4 class="card-title">Product 2</h4>
+                                        <input type="text" id="username" name="username" placeholder="Enter your username">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6" >
+                                <div class="card-sub"> <img class="card-img-top img-fluid" src="http://frontendfreecode.com/codes/files/card3.jpg" alt="Card image cap" draggable="false">
+                                    <div class="card-block">
+                                        <h4 class="card-title">Product 3</h4>
+                                        <p class="card-text">That might be little bit risky to have crew member like them.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                          
+                        </div>
+                    </div>
+                </div> <!-- Draggable Without Images card end -->
+            </div>
+        </div>
+    </div>
+</div><div id="bcl"><a style="font-size:8pt;text-decoration:none;" href="http://www.devanswer.com">Free Frontend</a></div>
+<script>
+$( document ).ready(function() {
+    $("#sortable").sortable();
+    $("#sortable").disableSelection();
+});
+</script>
+
+</body>
+</html>

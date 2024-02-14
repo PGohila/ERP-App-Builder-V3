@@ -1,0 +1,180 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %}
+{% block head_block %}
+<style>
+        .field-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+
+        .input-group label,
+        .input-group input {
+            margin-bottom: 10px;
+        }
+        
+        .priority-input {
+            width: 40px;
+            margin-left: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
+    
+{% endblock %}
+{% block body_block %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body" id="dynamicForm">
+            <h5 class="card-title">Select Table:</h5>
+            <select class="form-control mb-3" id="table" onchange="populateFields()">
+                <option value="">--Select--</option>
+                {% for data in record_table %}
+                    <option value="{{ data.id }}">{{ data.name }}</option>
+                {% endfor %}
+            </select>
+            <div id="fieldsContainer"></div>
+
+            <!-- Change type to "button" to prevent form submission -->
+            <button type="button" class="btn btn-primary" onclick="savePriorityOrder()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ... (previous script content) ... -->
+
+<script>
+    const drake = dragula();
+
+    drake.on('cloned', (clone, original, type) => {
+        clone.classList.remove('form-control');
+    });
+
+    function populateFields() {
+        const selectedTable = document.getElementById('table').value;
+        getFieldsFromServer(selectedTable);
+    }
+
+    function populateFieldsWithData(fields) {
+        const fieldsContainer = document.getElementById('fieldsContainer');
+        fieldsContainer.innerHTML = '';
+
+        fields.forEach((field, index) => {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.className = 'field-container input-group';
+
+            const label = document.createElement('label');
+            label.textContent = `${field.field_name}:`;
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `field${index + 1}`;
+            input.classList.add('form-control');
+            input.setAttribute('draggable', 'false');
+
+            const priorityLabel = document.createElement('label');
+            priorityLabel.textContent = 'Priority:';
+
+            const priorityInput = document.createElement('input');
+            priorityInput.type = 'text';
+            priorityInput.name = `priority${index + 1}`;
+            priorityInput.value = index + 1;
+            priorityInput.classList.add('form-control', 'priority-input');
+            priorityInput.readOnly = true;
+            priorityInput.setAttribute('draggable', 'false');
+
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+            fieldContainer.appendChild(priorityLabel);
+            fieldContainer.appendChild(priorityInput);
+            fieldsContainer.appendChild(fieldContainer);
+        });
+
+        drake.containers = [];
+        drake.containers.push(fieldsContainer);
+
+        drake.on('drop', () => {
+            updatePriorityValues();
+        });
+
+        if (fields.length > 0) {
+            const messageParagraph = document.createElement('p');
+            messageParagraph.textContent = 'Drag and drop to adjust the priority';
+            fieldsContainer.insertBefore(messageParagraph, fieldsContainer.firstChild);
+        }
+    }
+
+    function updatePriorityValues() {
+        const priorityInputs = document.querySelectorAll('.priority-input');
+        priorityInputs.forEach((input, index) => {
+            input.value = index + 1;
+        });
+    }
+
+    function getFieldsFromServer(tableName) {
+        $.ajax({
+            url: "{% url 'ajax_get_table_id' %}?table_id=" + tableName,
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                populateFieldsWithData(data);
+            },
+            error: function (error) {
+                console.error('Error fetching fields from the server:', error);
+            }
+        });
+    }
+
+//     function savePriorityOrder() {
+//     // Get the selected table element
+//     const tableElement = document.getElementById('table');
+
+//     // Check if a table is selected
+//     if (tableElement && tableElement.value) {
+//         const tableId = tableElement.value;
+//         const priorities = Array.from(document.querySelectorAll('.priority-input')).map(input => input.value);
+
+//         const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+//         $.ajax({
+//             url: '/save_priority_order/',
+//             type: 'POST',
+//             data: {
+//                 table_id: tableId,
+//                 priority: priorities,
+//                 csrfmiddlewaretoken: csrfToken,
+//             },
+//             success: function (data) {
+//                 console.log(data);
+//             },
+//             error: function (error) {
+//                 console.error('Error saving priority order:', error);
+//             }
+//         });
+//     } else {
+//         console.error('No table selected.');
+//     }
+// }
+
+</script>
+
+<!-- ... (remaining script imports) ... -->
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

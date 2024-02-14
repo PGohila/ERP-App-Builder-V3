@@ -1,0 +1,223 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            
+            <h3><span class="text-info">Screen Name:</span> {{ screen.screen_name }}</h3>
+            <div class="card col-md-12  p-3">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="p-4" style="background-color: rgb(240, 255, 251);">
+                        <div class="mb-3 ">
+                            <label for="screen_version_name">Screen Version Name:</label>
+                            <input type="text" name="screen_version_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3 ">
+                            <label for="screen_version_name">Screen Version Name:</label>
+                            <select name="user_type" id="id_user_type" class="form-control">
+                                <option value="">Select</option>
+                                {% for data in user_type %}
+                                <option value="{{data.id}}">{{data.user_type}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>     
+                    
+<!-- Alert -->
+                    {% for alert in alerts %}
+                    <div class="mb-3">
+                        <input type="checkbox" name="checkbox_for_alerts" class="form-check-input">
+                        <label class="form-check-label">Include Alerts</label>
+                    </div>
+                    <div class="mb-3">
+                        <div class="alert alert-{{ alert.color_code }} alert-dismissible fade show" role="alert">
+                            {{ alert.message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    </div>
+                    {% endfor %}
+<!-- a_button -->
+
+                    {% for a_button in a_buttons %}
+                    <div class="mb-3">
+                        <input type="checkbox" name="checkbox_for_a_buttons" class="form-check-input">
+                        <label class="form-check-label">Include A_Buttons</label>
+                    </div>
+                    <div class="mb-3">
+                        <a href="{{ a_button.url_link }}" class="btn btn-{{ a_button.color_code }}">
+                            {{a_button.button_name }}</a>
+                    </div>
+                    {% endfor %}
+<!-- button,modal -->
+
+                    {% for modal in modals %}
+                    <div class="mb-3">
+                        <input type="checkbox" name="checkbox_for_modal_{{ modal.id }}" class="form-check-input">
+                        <label class="form-check-label">Include this Modal</label>
+                    </div>
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-{{modal.button_color}}" data-bs-toggle="modal"
+                            data-bs-target="#{{modal.button_name}}">
+                            {{modal.button_name}}
+                        </button>
+                    </div>
+
+<!--  Modal Normal -->
+                    <div class="modal fade" id="{{modal.button_name}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-{{modal.modal_size}}">
+                            <div class="modal-content" style="background-color:{{modal.modal_color}};">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">{{modal.modal_title}}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    {{modal.modal_description}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% endfor %}
+<!-- ModalForm -->
+                    {% for modal in modals %}
+                    <div class="modal fade" id="{{ modal.modal_id }}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-{{ modal.modal_size }}">
+                            <div class="modal-content" style="background-color:{{ modal.modal_color }};">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">
+                                        {{ modal.modal_title }}
+                                        {% if view %}
+                                            view
+                                        {% elif edit %}
+                                            Edit
+                                        {% endif %}
+                                    </h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="col-md-12">
+                                        <div class="card p-3">
+                                            {% for form_table in form_widget_tables %}
+                                               
+                                                    <form method="post" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="row">
+                                                            {% for field in form_table.field_set.all %}
+                                                                <div class="col-md-12 mb-3">
+                                                                    {{ field.field_name }}
+                                                                    {% if field.required %}
+                                                                    <span style="color: red;">*</span>
+                                                                    {% endif %}
+                                                                    {% if field.field_type == 'CharField' %}
+                                                                        <input type="text" name="{{ field.field_name }}" class="form-control">
+                                                                    {% elif field.field_type == 'IntegerField' %}
+                                                                        <input type="number" name="{{ field.field_name }}" class="form-control">
+                                                                    {% elif field.field_type == 'BooleanField' %}
+                                                                        <input type="checkbox" name="{{ field.field_name }}" class="form-control">
+                                                                    {% endif %}
+                                                                    
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                        <br>
+                                                        <button type="submit" class="btn btn-primary text-white" style="float: right;">Save</button><br><br>
+                                                    </form>
+                                               
+                                            {% endfor %}
+            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+                <!-- Main Form -->
+                <div class="mb-3">
+                    <input type="checkbox" name="checkbox_for_main_form" class="form-check-input">
+                    <label class="form-check-label">Include Main Form</label>
+                </div>
+                {% for form_table in form_widget_tables %}
+                <div class="mb-3">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="row">
+                            {% for field in form_table.field_set.all %}
+                                <div class="col-md-12 mb-3">
+                                    {{ field.field_name }}
+                                    {% if field.required %}
+                                    <span style="color: red;">*</span>
+                                    {% endif %}
+                                    {% if field.field_type == 'CharField' %}
+                                        <input type="text" name="{{ field.field_name }}" class="form-control">
+                                    {% elif field.field_type == 'IntegerField' %}
+                                        <input type="number" name="{{ field.field_name }}" class="form-control">
+                                    {% elif field.field_type == 'BooleanField' %}
+                                        <input type="checkbox" name="{{ field.field_name }}" class="form-control">
+                                    {% endif %}
+                                    
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <br>
+                        <button type="submit" class="btn btn-primary text-white" style="float: right;">Save</button><br><br>
+                    </form>
+                </div>
+            {% endfor %}
+            
+                
+
+                   
+
+ <!-- Cards -->
+ <div class="mb-3">
+        <input type="checkbox" name="checkbox_for_cards" class="form-check-input">
+        <label class="form-check-label">Include Cards</label>
+    </div>
+                    {% for card in cards %}
+                    <div class="mb-3">
+                        <div class="col-md-{{ card.size_in_number }}">
+
+                            <div class="card" style="background-color:{{ card.color_code }}">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ card.card_title }}</h5>
+                                    <p>{{ card.description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+<!-- Forms -->
+                    {% for form_widget in record_table %}
+                    <div class="mb-3">
+                        <input type="checkbox" name="checkbox_for_form_widget_{{ form_widget.id }}" class="form-check-input">
+                        <label class="form-check-label">Include this Form Widget</label>
+                    </div>
+                    <div class="mb-3">
+                        <p>Card Size: {{ form_widget.card_size }}</p>
+                        <p>Heading: {{ form_widget.heading }}</p>
+                    </div>
+                    {% endfor %}
+                    <div class="col-md-12 mt-3">
+                        <button type="submit" class="btn btn-primary text-white" style="float:right">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

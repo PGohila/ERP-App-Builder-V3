@@ -1,0 +1,672 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %}
+{% block head_block %}
+
+
+<style>
+    .field-group {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .field-group input {
+        flex: 1;
+        margin-right: 10px;
+    }
+
+    .field-group button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    .sortable {
+        cursor: move;
+    }
+
+    .hidden {
+        display: none;
+        background-color: rgb(250, 247, 247);
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+    #form_div, #editor_div, .cke_toolbar_last{
+        display: none;
+    }
+</style>
+
+{% endblock %}
+
+{% block body_block %}
+{% load static %}
+<script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
+<script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
+
+<div class="container-fluid">
+    <form method="post">
+        {% csrf_token %}
+        <div class="app-content pt-3 p-md-3 p-lg-4">
+            <div class="container-xl">
+                <h5>Create a New Screen</h5>
+                <div class="card col-md-12  p-3">
+                    <div class="form-group">
+                        {{ screen_details.as_p }}
+                        
+                    </div>
+                    <div>
+                        <label for="">Menu Type</label>
+                        <select name="menu_type" id="id_menu_type" required class="form-control"
+                            onchange="menu_open(this)">
+                            <option value="">--- select ---</option>
+                            <option value="main_menu">Main Menu</option>
+                            <option value="sub_menu">Sub Menu</option>
+                        </select>
+                    </div>
+                    <div id="new_menu_block" style="display: none;">
+                        <label for="">Menu name</label>
+                        <input type="text" class="form-control" name="new_menu_name" id="id_new_menu_name">
+                    </div>
+                    <div id="sub_menu_block" style="display: none;"><br>
+                        <div class="row">
+                            <div class="col-md-4 form-group">
+                                <label for="id_sub_main_menu">Menu name</label>
+                                <select class="form-control" name="sub_main_menu" id="id_sub_main_menu">
+                                    <option value="">--- Select ---</option>
+                                    {% for value in main_sub_menu_record %}
+                                    <option value="{{ value.id }}">{{ value.main_submenu_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2 form-group"><br>
+                                <button type="button" class="btn btn-primary text-white" data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal">
+                                    + Add
+                                </button>
+                            </div>
+                            <div class="col-md-6 form-group">
+                                <label for="id_sub_menu_name">Sub Menu name</label>
+                                <input type="text" name="sub_menu_name" class="form-control">
+                            </div>
+                            <div class="col-md-12 form-group">
+
+                            </div>
+                        </div>
+                    </div>
+               
+
+                    <br>
+                    <div id="dropdown-container">
+                        <div class="col-md-12 widget-field">
+                            <label>Choose Your Widget</label>
+                            <select id="1" class="form-control" onchange="showBlock(this)">
+                                <option value="none">Select</option>
+                                <option value="8">Form</option>
+                                <option value="4">Card</option>
+                                <option value="7">Modal</option>
+                                <option value="1">Alert</option>
+                                <option value="2">Link</option>
+                            </select>
+                            <div id="block1" class="hidden block">
+                                <!-- Block 1 content -->
+                            </div>
+                        </div><br>
+
+                    </div>
+
+
+                    <div id="blockTemplate1" class="hidden block"><br>
+
+                        <center>
+                            <h5 class="bg-dark">Alert Widget</h5>
+                        </center>
+                        <hr>
+                        <div class="container p-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Color Code:</label>
+                                        <select class="form-control" name="alert_color_code">
+                                            <option value="button">Blue</option>
+                                            <option value="secondary">Grey</option>
+                                            <option value="success">Green</option>
+                                            <option value="danger">Red</option>
+                                            <option value="warning">Orange</option>
+                                            <option value="info">SkyBlue</option>
+                                            <option value="light">Light</option>
+                                            <option value="dark">Dark</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="message">Message:</label>
+                                        <input type="text" class="form-control" name="alert_message">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Add the 'name' attribute to input fields -->
+                    <div id="blockTemplate2" class="hidden block"><br>
+                        <center>
+                            <h5 class="bg-dark">Url Button</h5>
+                        </center>
+                        <hr>
+                        <div class="container p-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Button Url:</label>
+                                        <input type="text" class="form-control" name="a_button_url_link">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Color Code:</label>
+                                        <select class="form-control" name="a_button_color_code">
+                                            <option value="button">Blue</option>
+                                            <option value="secondary">Grey</option>
+                                            <option value="success">Green</option>
+                                            <option value="danger">Red</option>
+                                            <option value="warning">Orange</option>
+                                            <option value="info">SkyBlue</option>
+                                            <option value="light">Light</option>
+                                            <option value="dark">Dark</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Button Name:</label>
+                                        <input type="text" class="form-control" name="a_button_button_name">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add the 'name' attribute to input fields -->
+                    <div id="blockTemplate3" class="hidden block"><br>
+                        <center>
+                            <h5 class="bg-dark">Button</h5>
+                        </center>
+                        <hr>
+                        <div class="container p-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Button Type</label>
+                                        <select class="form-control" name="button_button_type">
+                                            <option value="button">Button</option>
+                                            <option value="submit">Submit</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Color Code:</label>
+                                        <select class="form-control" name="button_color_code">
+                                            <option value="button">Blue</option>
+                                            <option value="secondary">Grey</option>
+                                            <option value="success">Green</option>
+                                            <option value="danger">Red</option>
+                                            <option value="warning">Orange</option>
+                                            <option value="info">SkyBlue</option>
+                                            <option value="light">Light</option>
+                                            <option value="dark">Dark</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Button Name:</label>
+                                        <input type="text" class="form-control" name="button_button_name">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add the 'name' attribute to input fields -->
+                    <div id="blockTemplate4" class="hidden block"><br>
+                        <center>
+                            <h5 class="bg-dark">Card Form </h5>
+                        </center>
+                        <hr>
+                        <div class="container p-3">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Card Size</label>
+                                        <input type="text" class="form-control" name="card_size_in_number"
+                                            placeholder="Use number from 1 to 12 eg:6">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Color Code:</label>
+                                        <input type="color" class="form-control" value="#ffffff" name="card_color_code" id="id_card_color_code">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Card Title:</label>
+                                        <input type="text" class="form-control" name="card_card_title">
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label>Card Description:</label><br>
+                                        {{text_form.description}}
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <!-- Add the 'name' attribute to input fields -->
+                        <div id="blockTemplate5" class="hidden block"><br>
+                            <center>
+                                <h5 class="bg-dark">Dropdown</h5>
+                            </center>
+                            <hr>
+                            <div class="container p-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Color Code:</label>
+                                            <select class="form-control" name="dropdown_color_code">
+                                                <option value="button">Blue</option>
+                                                <option value="secondary">Grey</option>
+                                                <option value="success">Green</option>
+                                                <option value="danger">Red</option>
+                                                <option value="warning">Orange</option>
+                                                <option value="info">SkyBlue</option>
+                                                <option value="light">Light</option>
+                                                <option value="dark">Dark</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Button name:</label>
+                                            <input type="text" class="form-control" name="dropdown_button_name">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Dropdown Item Name:</label>
+                                            <input type="text" class="form-control" name="dropdown_item_name">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add the 'name' attribute to input fields -->
+                        <div id="blockTemplate6" class="hidden block"><br>
+                            <center>
+                                <h5 class="bg-dark">Input</h5>
+                            </center>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-container">
+                                        {{ input_form.as_p }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Add the 'name' attribute to input fields -->
+                        <div id="blockTemplate7" class="hidden block"><br>
+                            <center>
+                                <h5 class="bg-dark">Modal</h5>
+                            </center>
+                            <hr>
+                            <div class="container p-3">
+                                <div class="row" id="des_typr">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Button Name</label>
+                                            <input type="text" class="form-control" name="modal_button_name" id="id_modal_button_name">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label> Button Color:</label>
+                                            <select class="form-control" name="modal_button_color">
+                                                <option value="primary">priamry</option>
+                                                <option value="secondary">secondary</option>
+                                                <option value="success">success</option>
+                                                <option value="danger">danger</option>
+                                                <option value="warning">warning</option>
+                                                <option value="info">info</option>
+                                                <option value="light">light</option>
+                                                <option value="dark">dark</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Modal Title:</label>
+                                            <input type="text" class="form-control" name="modal_modal_title">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Modal Size</label>
+                                            <select class="form-control" name="modal_size">
+                                                <option value="sm">Small</option>
+                                                <option value="lg">Large</option>
+                                                <option value="xl">Extra Large</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Modal Color</label>
+                                            <input type="color" class="form-control" name="modal_color">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4" >
+                                        <div class="form-group">
+                                            <label>Modal Description Type</label>
+                                            <select name="modal_modal_description_type" class="form-control" id="id_modal_modal_description" onchange="modal_des(this)">
+                                                <option value="">---select---</option>
+                                                <option value="form">Form</option>
+                                                <option value="other">Other</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4" id="form_div">
+                                        <div class="form-group" >
+                                            <label>Table</label>
+                                            <select name="modal_description_table" id="id_modal_modal_description" class="form-control">
+                                                <option value="None">---select---</option>
+                                                {% for data in table_query %}
+                                                <option value="{{data.id}}">{{data.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="editor_div">
+                                        <div class="col-md-12">
+                                            <label for="id_modal_description">Modal description:</label><br>
+                                            <div class="django-ckeditor-widget" data-field-id="id_modal_description" style="display: inline-block;">
+                                                <textarea name="modal_description_editor" cols="40" rows="10" class="form-control" id="id_modal_description" data-processed="0" data-config="{&quot;skin&quot;: &quot;moono-lisa&quot;, &quot;toolbar_Basic&quot;: [[&quot;Source&quot;, &quot;-&quot;, &quot;Bold&quot;, &quot;Italic&quot;]], &quot;toolbar_Full&quot;: [[&quot;Styles&quot;, &quot;Format&quot;, &quot;Bold&quot;, &quot;Italic&quot;, &quot;Underline&quot;, &quot;Strike&quot;, &quot;SpellChecker&quot;, &quot;Undo&quot;, &quot;Redo&quot;], [&quot;Link&quot;, &quot;Unlink&quot;, &quot;Anchor&quot;], [&quot;Image&quot;, &quot;Flash&quot;, &quot;Table&quot;, &quot;HorizontalRule&quot;], [&quot;TextColor&quot;, &quot;BGColor&quot;], [&quot;Smiley&quot;, &quot;SpecialChar&quot;], [&quot;Source&quot;]], &quot;toolbar&quot;: &quot;Full&quot;, &quot;height&quot;: 291, &quot;width&quot;: &quot;100%&quot;, &quot;filebrowserWindowWidth&quot;: 940, &quot;filebrowserWindowHeight&quot;: 725, &quot;language&quot;: &quot;en-us&quot;}" data-external-plugin-resources="[]" data-id="id_modal_description" data-type="ckeditortype"></textarea>
+                                            </div>
+        
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                        <div id="blockTemplate8" class="hidden block"><br>
+                            <center>
+                                <h5 class="bg-dark">Form </h5>
+                            </center>
+                            <hr>
+                            <div class="container p-3">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label> Card Size</label>
+                                            <input type="text" class="form-control" name="form_card_size"
+                                                placeholder="Use number from 1 to 12 eg:6">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Heading :</label>
+                                            <input type="text" class="form-control" name="form_heading">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Form Table:</label>
+                                            <select class="form-control" name="form_formtable">
+                                                <option value="">--Select--</option>
+                                                {% for data in record_table %}
+                                                <option value="{{data.id}}">{{data.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="col-md-12">
+                        <button type="button" class="btn btn-primary" onclick="addWidget()">Add Widget</button>
+                        <button type="button" class="btn btn-danger" onclick="removeWidget()">Remove Widget</button>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mt-3">
+            <button type="submit" class="btn btn-primary text-white" style="float: right;">Create</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+<div class="card p-3 mt-3">
+    <h5>List of Screen Elements</h5>
+    <ul>
+    </ul>
+    <table id="tableID" class="display">
+        <thead style="background-color: rgb(231, 252, 231);" class="mt-3">
+            <tr>
+                <th>S.No</th>
+                <th>Project Name</th>
+                <th>Screen Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in screens_record %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                {% ifchanged data.project %}
+                <td>{{ data.project }}</td>
+                {% else %}
+                <td></td>
+                {% endifchanged %}
+                <td>{{ data.screen_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="post" action="{% url 'main_sub_menu_save' %}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+
+                    {% csrf_token %}
+                    {{ main_main_form.as_p }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    let widgetCount = 2;
+
+    function addWidget() {
+        const container = document.getElementById('dropdown-container');
+
+        // Create new dropdown and block
+        const newDropdown = document.createElement('div');
+        const newBlock = document.createElement('div');
+
+        const widgetId = widgetCount;
+        newDropdown.innerHTML = `
+            <div class="col-md-12 widget-field">
+                <label>Choose Your Widget</label>
+                <select class="form-control" id="${widgetId}" onchange="showBlock(this)">
+                    <option value="none">Select</option>
+                    <option value="8">Form</option>
+                    <option value="4">Card</option>
+                    <option value="7">Modal</option>
+                    <option value="1">Alert</option>
+                    <option value="2">Link</option>
+                </select>
+                <div id="block${widgetId}" class="hidden block"></div>
+            </div>
+        `;
+
+        container.appendChild(newDropdown);
+
+        widgetCount++;
+    }
+
+    function removeWidget() {
+        const container = document.getElementById('dropdown-container');
+
+        // Check if there's more than one dropdown before removing
+        if (container.childElementCount > 1) {
+            // Get the last added dropdown and remove it
+            const lastDropdown = container.lastElementChild;
+            container.removeChild(lastDropdown);
+            widgetCount--;
+        }
+    }
+
+    function showBlock(selectElement) {
+    const selectedValue = selectElement.value;
+    const selectedId = selectElement.id;
+    const blockDiv = document.getElementById("block" + selectedId);
+    const blockTemplate = document.getElementById('blockTemplate' + selectedValue);
+
+    if (selectedValue !== 'none') {
+        // Clone the template content and append it to the block div
+        blockDiv.innerHTML = blockTemplate.innerHTML;
+
+        // modal block
+        if (blockTemplate.id === 'blockTemplate7') {
+            const originalTextarea = blockDiv.querySelector('textarea');
+            const newCKEditorId = 'id_modal_description' + selectedId;
+
+            var divInsideBlockDiv = blockDiv.querySelector('#cke_id_modal_description');
+            
+            if (divInsideBlockDiv) {
+                // Option 1: Hide the div
+                divInsideBlockDiv.style.display = 'none'
+            }
+
+            if (originalTextarea) {
+                // Change the ID of the textarea
+                originalTextarea.id = newCKEditorId;
+
+                // Initialize CKEditor for the new block
+                CKEDITOR.replace(newCKEditorId);
+            }
+        }
+
+         // card block
+         if (blockTemplate.id === 'blockTemplate4') {
+            const originalTextarea = blockDiv.querySelector('textarea');
+            const newCKEditorId = 'id_description' + selectedId;
+
+            var divInsideBlockDiv = blockDiv.querySelector('#cke_id_description');
+            
+            if (divInsideBlockDiv) {
+                // Option 1: Hide the div
+                divInsideBlockDiv.style.display = 'none'
+            }
+
+            if (originalTextarea) {
+                // Change the ID of the textarea
+                originalTextarea.id = newCKEditorId;
+
+                // Initialize CKEditor for the new block
+                CKEDITOR.replace(newCKEditorId);
+            }
+        }
+        blockDiv.style.display = 'block';
+    } else {
+        // Clear the content if "Select an item" is chosen
+        blockDiv.innerHTML = '';
+        blockDiv.style.display = 'none';
+    }
+}
+
+</script>
+
+
+
+{% endblock %}
+{% block script_block %}
+<script>
+    function menu_open(selectElement) {
+        var menu_type = selectElement.value;
+
+        // Hide all blocks initially
+        $('#new_menu_block').hide();
+        $('#sub_menu_block').hide();
+
+        // Show the block based on the selected menu type
+        if (menu_type === 'main_menu') {
+            $('#new_menu_block').show();
+        } else if (menu_type === 'sub_menu') {
+            $('#sub_menu_block').show();
+        }
+    }
+
+</script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    function modal_des(selectElement) {
+        var menu_type = selectElement.value;
+        var container = $(selectElement).closest('#des_typr'); // Assuming the container has a class 'row'
+
+        if (menu_type === 'form') {
+            console.log(menu_type);
+            container.find('#form_div').show();
+            container.find('#editor_div').hide();
+        } else if (menu_type === 'other') {
+            container.find('#editor_div').show();
+            container.find('#form_div').hide();
+        } else {
+            container.find('#editor_div, #form_div').hide();
+        }
+    }
+</script>
+
+{% endblock %}

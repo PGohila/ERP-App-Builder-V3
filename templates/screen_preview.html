@@ -1,0 +1,36 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %}
+{% block head_block %}
+
+{% endblock %}
+{% block body_block %}
+{% load static %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body" id="dynamicForm">
+            <h5 class="card-title">{{screen_version.screen.screen_name}} Preview</h5><br>
+
+            <div class="row">
+                {% for data in secreen_fields %}
+                <div class="col-md-{{data.column_size}}">
+                    <label for="{{data.field.field_name}}_id">{{data.label_name}}</label>
+                    <input type="{{data.field.field_type}}" id="{{data.field.field_name}}_id"
+                        name="{{data.field.field_name}}" class="form-control">
+                </div>
+                {% endfor %}
+            </div><br>
+
+            <form method="post" id="form_id">
+                {% csrf_token %}
+                <a href="{% url 'screen_version_s3' screen_version.id %}" class="btn btn-warning">Back</a>
+                <button type="submit" class="btn btn-primary">Save</button>
+                <button type="submit" class="btn btn-info">Save and Generate Screen</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

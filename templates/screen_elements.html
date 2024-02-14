@@ -1,0 +1,165 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %} {% block head_block %}
+
+<style>
+  .field-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .field-group input {
+    flex: 1;
+    margin-right: 10px;
+  }
+
+  .field-group button {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+
+  .sortable {
+    cursor: move;
+  }
+  .hidden {
+    display: none;
+  }
+</style>
+
+{% endblock %} {% block body_block %} {% load static %}
+<div class="container-fluid">
+  <div class="app-content pt-3 p-md-3 p-lg-4">
+    <div class="container-xl">
+      <h5>Create a New Screen</h5>
+      <div class="card col-md-12 p-3">
+        <form method="POST">
+          <div class="form-group">
+            <div class="col-md-6">
+              <label>Screen Name</label>
+              <input type="text" class="form-control" name="screen_name" />
+            </div>
+          </div>
+          <br />
+
+          <select id="nameSelect" class="form-control">
+            <option value="">Select</option>
+            <option value="option1">Alert</option>
+            <option value="option2">A button</option>
+            <option value="option3">Button</option>
+            <option value="option4">Card</option>
+            <option value="option5">Dropdown</option>
+            <option value="option7">Modal</option>
+          </select>
+
+          <div id="block1" class="hidden">
+            <br />
+            <center><h5 class="bg-dark">Alert Widget</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">
+                  {{ alert_form.as_p }}
+                  <button type="submit">Add Alert</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="block2" class="hidden">
+            <center><h5 class="bg-dark">Url Button</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">{{ a_button_form.as_p }}</div>
+              </div>
+            </div>
+          </div>
+          <div id="block3" class="hidden">
+            <center><h5 class="bg-dark">Button</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">{{ button_form.as_p }}</div>
+              </div>
+            </div>
+          </div>
+          <div id="block4" class="hidden">
+            <center><h5 class="bg-dark">Card Form</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">{{ card_form.as_p }}</div>
+              </div>
+            </div>
+          </div>
+          <div id="block5" class="hidden">
+            <center><h5 class="bg-dark">Dropdown</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">{{ dropdown_form.as_p }}</div>
+              </div>
+            </div>
+          </div>
+          <div id="block7" class="hidden">
+            <center><h5 class="bg-dark">Modal</h5></center>
+            <hr />
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-container">{{ modal_form.as_p }}</div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-2 py-2">
+            <button
+              type="submit"
+              class="btn btn-success"
+              id="screen-element-submit"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          var selectElement = document.getElementById("nameSelect");
+          let submitBtn = document.querySelector("#screen-element-submit");
+
+          // Get all the block elements
+          var blocks = document.querySelectorAll("[id^='block']");
+
+          // Function to hide all blocks
+          function hideAllBlocks() {
+            for (var i = 0; i < blocks.length; i++) {
+              blocks[i].style.display = "none";
+            }
+          }
+
+          // Add an event listener to the select element
+          selectElement.addEventListener("change", function () {
+            hideAllBlocks(); // Hide all blocks first
+            var selectedValue = selectElement.value; // Get the selected value
+            if (selectedValue !== "") {
+              // Show the corresponding block based on the selected value
+              var selectedBlock = document.getElementById(
+                "block" + selectedValue.substr(6)
+              );
+              if (selectedBlock) {
+                selectedBlock.style.display = "block";
+              }
+            }
+          });
+
+          submitBtn.addEventListener("click", () => {
+            console.log("Clicked");
+          });
+        });
+      </script>
+    </div>
+  </div>
+</div>
+
+{% endblock %} {% block script_block %} {% endblock %}

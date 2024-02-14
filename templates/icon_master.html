@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+    <h5>Create a New Form</h5>
+    <div class="card col-md-12  p-3">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <a href="https://icons.getbootstrap.com/" target="_blank">You can get Icon from Here </a>
+            <p id="icon_preview"></p>
+    
+            
+            <br>
+            <button type="submit" class="btn btn-primary text-white" style="float: right">Create Screen</button>
+        </form>
+    </div>
+    
+
+    <div class="card p-3 mt-3">
+        <h5>List of Database Tables</h5>
+        <ul>
+            {% for screen in screens %}
+                <li><a href="{% url 'edit_screen' screen.id %}">{{ screen.screen_name }}</a></li>
+            {% endfor %}
+        </ul>
+       <table id="tableID" class="display">
+        <thead style="background-color: rgb(231, 252, 231);" class="mt-3">
+            <tr>
+                <th>S.no</th>
+                <th>Icon Name</th>
+                <th>Icon Image</th>
+            </tr>
+        </thead>
+        <tbody>
+                {% for data in records %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ data.icon_name }}</td>
+                        <td>{{ data.icon_svg|safe  }}</td>
+                    </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+       </div>
+       </div>
+       </div>
+       </div>
+
+    {% endblock %}
+    {% block script_block %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function(){
+         
+          $("#id_icon_svg").keyup(function(){
+            $('#icon_preview').html(this.value)
+          });
+        });
+        </script>
+    {% endblock  %}

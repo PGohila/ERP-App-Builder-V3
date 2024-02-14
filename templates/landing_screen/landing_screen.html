@@ -1,0 +1,202 @@
+{% extends 'landing_screen/base.html' %}
+{% block body_block %}
+{% load static %}
+<style>
+  .button1 {
+    border-color: white;
+    color: black;
+    background-color: white;
+    text-align: center;
+
+  }
+
+  #main {
+
+    display: flex;
+    align-items: center;
+    text-align: right;
+    /* Vertical align the elements to the center */
+  }
+
+  body {
+    background: black;
+  }
+
+  .button {
+    background-color: #004A7F;
+    -webkit-border-radius: 10px;
+    border-radius: 10px;
+    border: none;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: inline-block;
+    font-family: Arial;
+    font-size: 15px;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    text-wrap: nowrap;
+  }
+</style>
+<div class="content bg-white">
+  <div class="container">
+    <div class="">
+      <br>
+      <div id="main">
+        <div class="container">
+          <div class="row">
+            <div class="col-3">
+            <form method="post" action="{% url 'project_deletion' %}">
+              {% csrf_token %}
+              
+                <input id="selectedProjects" type="hidden" name="selected_projects">
+                <button id="deleteButton" class="btn btn-danger" style="display: none;" type="submit"
+                  onclick="handleDelete()">Delete</button>
+             
+            </form>
+          </div>
+            <div class="col-3">
+              <h3 class="fw-bold">Projects</h3>
+            </div>
+            <div class="col-3 text-end mb-1">
+              <a class="btn btn-primary text-white" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Build App</a>
+            </div>
+
+
+          </div>
+        </div>
+
+      </div>
+      <form method="post">
+        {% csrf_token %}
+        <div class="row">
+          
+            {% for data in all_project %}
+            <div class=" col-md-3">
+            <div class="card shadow rounded">
+
+              <input class="form-check-input position-absolute top-0 end-0 mt-2 me-2" type="checkbox"
+                value="{{data.id}}" id="selectCheckbox{{data.id}}" onchange="handleCheckboxChange('{{data.id}}', this)">
+              <a href="/dashboard" name="projectid" class="button1" onclick="handleClick('{{data.id}}'); return false;">
+                <div class="card-body">
+
+                  <!-- Add space between the header and content for better visual separation -->
+                  <div style="margin-top: 10px;">
+                    <h5 class="text-muted">
+                      <b style="text-transform: uppercase; font-size: 1.1em; color: #3366cc;">{{data.project_name}}</b>
+                    </h5>
+
+                  </div>
+                  <div class="card-header"
+                    style="background-image: linear-gradient(to right, #ff8a00, #da1b60); color: white; text-align: center;">
+                    <!-- You can add an icon or an image here for a visually appealing header -->
+                    <i class="bi bi-emoji-heart-eyes" style="font-size: 1rem;"></i>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            </div>
+            {% endfor %}
+         
+        </div>
+      </form>
+
+    </div><!--//container-fluid-->
+  </div><!--//app-content-->
+</div>
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Create a New Django Project</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="app-content pt-3 p-md-3 p-lg-4">
+            <div class="container-xl">
+
+              <div class="card col-md-12  p-3">
+                <form method="post">
+                  {% csrf_token %}
+                  <div class="form-container">
+                    {{ form.as_p }}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary text-white" style="float:right">Create Project</button>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block script_block %}
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+  function handleClick(value) {
+    // Do something with the value, for example, log it
+    console.log('Clicked with value:', value);
+
+    headers = { 'X-CSRFToken': '{{ csrf_token }}' }
+    $.ajax({
+      type: 'POST',
+      url: '{% url "get_projectid" %}',  // Replace with the actual URL of your Django view
+      data: { 'my_value': value },
+      dataType: 'json',
+      headers: headers,
+      success: function (response) {
+        // Check if there is a redirection URL in the response
+        if (response.redirect_url) {
+          // Redirect to the specified URL
+          window.location.href = response.redirect_url;
+        } else {
+          // Handle other cases or update the content as needed
+          console.log('No redirection URL provided');
+        }
+      },
+    })
+  }
+
+
+  function handleCheckboxChange(projectId, checkbox) {
+    var deleteButton = document.getElementById('deleteButton');
+    if (checkbox.checked) {
+      // Show the delete button if at least one checkbox is checked
+      deleteButton.style.display = 'block';
+    } else {
+      // Hide the delete button if no checkboxes are checked
+      deleteButton.style.display = 'none';
+    }
+
+    var selectedProjectsInput = document.getElementById('selectedProjects');
+    if (checkbox.checked) {
+      // Add the selected project ID to the hidden input value
+      if (selectedProjectsInput.value === '') {
+        selectedProjectsInput.value = projectId;
+      } else {
+        selectedProjectsInput.value += ',' + projectId;
+      }
+    } else {
+      // Remove the project ID if checkbox is unchecked
+      var regex = new RegExp(projectId + ',?', 'g');
+      selectedProjectsInput.value = selectedProjectsInput.value.replace(regex, '');
+    }
+  }
+</script>
+
+
+
+
+{% endblock %}

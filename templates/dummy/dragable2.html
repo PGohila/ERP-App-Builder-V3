@@ -1,0 +1,264 @@
+<!-- create_screen.html -->
+{% extends 'base.html' %}
+{% block head_block %}
+<style>
+        .field-container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+        }
+
+        .input-group label,
+        .input-group input {
+            margin-bottom: 10px;
+        }
+        
+        .priority-input {
+            width: 40px;
+            margin-left: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 8px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dragula/3.7.2/dragula.min.js"></script>
+    
+{% endblock %}
+{% block body_block %}
+{% load static %}
+
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-body" id="dynamicForm">
+            <h5 class="card-title">Select Table:</h5>
+            <select class="form-control mb-3" id="table" onchange="populateFields()">
+                <option value="">--Select--</option>
+                {% for data in fields %}
+                    <option value="{{ data.id }}">{{ data.name }}</option>
+                {% endfor %}
+            </select>
+            <div class="row">
+                <div draggable="true" class="col-md-6">sadas</div>
+                <div draggable="true" class="col-md-3">121</div>
+                <div draggable="true" class="col-md-3">2343</div>
+
+            </div>
+            <div id="fieldsContainer"></div>
+            <!-- Change type to "button" to prevent form submission -->
+            <button type="button" class="btn btn-primary" onclick="savePriorityOrder()">Submit</button>
+        </div>
+    </div>
+</div>
+
+<!-- ... (previous script content) ... -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const fieldsData = {{ fields_list|safe }};
+        populateFields(fieldsData);
+    });
+</script>
+
+
+<script>
+    const drake = dragula();
+
+    drake.on('cloned', (clone, original, type) => {
+        clone.classList.remove('form-control');
+    });
+
+    function makeLabelEditable(label) {
+        label.setAttribute('contentEditable', true);
+
+        label.addEventListener('blur', function () {
+            // Save the edited text or perform any other action
+            const newText = label.textContent;
+            // You can perform additional actions here, like updating the server or storing the new text.
+            console.log('New label text:', newText);
+        });
+    }
+
+    function calculateColumnSize(size) {
+        // Calculate the column size based on a 12-column grid
+        return (size / 12) * 100 + '%';
+    }
+
+    function updateFieldSizes(fields) {
+        const totalColumnSize = fields.reduce((acc, field) => acc + (field.columnSize || 4), 0);
+
+        fields.forEach((field, index) => {
+            const fieldContainer = document.getElementById(`field-container-${index + 1}`);
+            if (fieldContainer) {
+                const newWidth = calculateColumnSize((field.columnSize || 4) / totalColumnSize * 12);
+                fieldContainer.style.width = newWidth;
+            }
+        });
+    }
+
+    function autoArrangeFields(fields) {
+        const rowContainer = document.getElementById('rowContainer');
+        rowContainer.innerHTML = '';
+
+        let currentRow = document.createElement('div');
+        currentRow.className = 'row';
+
+        let currentRowSize = 0;
+
+        fields.forEach((field, index) => {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.id = `field-container-${index + 1}`;
+            fieldContainer.className = 'field-container input-group';
+
+            // Set dynamic column size based on the specified size out of 12 or use a default size
+            const fieldWidth = calculateColumnSize(field.columnSize || 4); // Default size is 4 out of 12
+            fieldContainer.style.width = fieldWidth;
+
+            const label = document.createElement('label');
+            label.textContent = field.customLabel || `${field.field_name}:`;
+
+            makeLabelEditable(label);  // Make the label editable
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `field${index + 1}`;
+            input.classList.add('form-control');
+            input.setAttribute('draggable', 'false');
+
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+
+            if (field.showPriority) {
+                // Show priority field only if specified in the field data
+                const priorityLabel = document.createElement('label');
+                priorityLabel.textContent = 'Priority:';
+
+                const priorityInput = document.createElement('input');
+                priorityInput.type = 'text';
+                priorityInput.name = `priority${index + 1}`;
+                priorityInput.value = index + 1;
+                priorityInput.classList.add('form-control', 'priority-input');
+                priorityInput.readOnly = true;
+                priorityInput.setAttribute('draggable', 'false');
+
+                fieldContainer.appendChild(priorityLabel);
+                fieldContainer.appendChild(priorityInput);
+            }
+
+            currentRow.appendChild(fieldContainer);
+            currentRowSize += field.columnSize || 4;
+
+            if (currentRowSize >= 12) {
+                // Start a new row if the current row is filled
+                rowContainer.appendChild(currentRow);
+                currentRow = document.createElement('div');
+                currentRow.className = 'row';
+                currentRowSize = 0;
+            }
+        });
+
+        // Add any remaining fields to the last row
+        if (currentRowSize > 0) {
+            rowContainer.appendChild(currentRow);
+        }
+    }
+
+    function populateFields(fields) {
+        const fieldsContainer = document.getElementById('fieldsContainer');
+        fieldsContainer.innerHTML = '';
+
+        fields.forEach((field, index) => {
+            const fieldContainer = document.createElement('div');
+            fieldContainer.id = `field-container-${index + 1}`;
+            fieldContainer.className = 'field-container input-group';
+
+            // Set dynamic column size based on the specified size out of 12 or use a default size
+            fieldContainer.style.width = calculateColumnSize(field.columnSize || 4); // Default size is 4 out of 12
+
+            const label = document.createElement('label');
+            label.textContent = field.customLabel || `${field.field_name}:`;
+
+            makeLabelEditable(label);  // Make the label editable
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = `field${index + 1}`;
+            input.classList.add('form-control');
+            input.setAttribute('draggable', 'false');
+
+            fieldContainer.appendChild(label);
+            fieldContainer.appendChild(input);
+
+            if (field.showPriority) {
+                // Show priority field only if specified in the field data
+                const priorityLabel = document.createElement('label');
+                priorityLabel.textContent = 'Priority:';
+
+                const priorityInput = document.createElement('input');
+                priorityInput.type = 'text';
+                priorityInput.name = `priority${index + 1}`;
+                priorityInput.value = index + 1;
+                priorityInput.classList.add('form-control', 'priority-input');
+                priorityInput.readOnly = true;
+                priorityInput.setAttribute('draggable', 'false');
+
+                fieldContainer.appendChild(priorityLabel);
+                fieldContainer.appendChild(priorityInput);
+            }
+
+            fieldsContainer.appendChild(fieldContainer);
+        });
+
+        drake.containers = [];
+        drake.containers.push(fieldsContainer);
+
+        drake.on('drop', () => {
+            updatePriorityValues();
+            autoArrangeFields(fields); // Update the field arrangement after a drop event
+        });
+
+        if (fields.length > 0) {
+            const messageParagraph = document.createElement('p');
+            messageParagraph.textContent = 'Drag and drop to adjust the priority';
+            fieldsContainer.insertBefore(messageParagraph, fieldsContainer.firstChild);
+        }
+
+        updateFieldSizes(fields); // Update field sizes initially
+        autoArrangeFields(fields); // Initial arrangement based on column sizes
+    }
+
+    function updatePriorityValues() {
+        const priorityInputs = document.querySelectorAll('.priority-input');
+        priorityInputs.forEach((input, index) => {
+            input.value = index + 1;
+        });
+    }
+
+    // Example data with initial column sizes out of 12
+    const fieldsData = [
+        { field_name: 'Field 1', customLabel: 'Custom Label 1', showPriority: false, columnSize: 3 },
+        { field_name: 'Field 2', showPriority: true, columnSize: 6 },
+        // Add more fields as needed
+    ];
+
+    // Populate fields with the example data
+    populateFields(fieldsData);
+</script>
+
+
+
+
+<!-- ... (remaining script imports) ... -->
+
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}

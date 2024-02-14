@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .column {
+      float: left;
+      width: 200px;
+      margin: 10px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      background-color: #f9f9f9;
+    }
+
+    .draggable {
+      position: relative;
+      cursor: move;
+      border: 1px solid #ccc;
+      margin-bottom: 5px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      user-select: none;
+    }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const columns = document.querySelectorAll('.column');
+      columns.forEach(makeColumnDraggable);
+
+      function makeColumnDraggable(column) {
+        let offsetX, offsetY, isDragging = false;
+
+        column.addEventListener('mousedown', function (e) {
+          isDragging = true;
+          offsetX = e.clientX - column.getBoundingClientRect().left;
+          offsetY = e.clientY - column.getBoundingClientRect().top;
+        });
+
+        document.addEventListener('mousemove', function (e) {
+          if (isDragging) {
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+
+            column.style.left = x + 'px';
+            column.style.top = y + 'px';
+          }
+        });
+
+        document.addEventListener('mouseup', function () {
+          isDragging = false;
+        });
+      }
+
+      const draggableFields = document.querySelectorAll('.draggable');
+      draggableFields.forEach(makeDraggable);
+
+      function makeDraggable(element) {
+        let offsetX, offsetY, isDragging = false;
+
+        element.addEventListener('mousedown', function (e) {
+          isDragging = true;
+          offsetX = e.clientX - element.getBoundingClientRect().left;
+          offsetY = e.clientY - element.getBoundingClientRect().top;
+        });
+
+        document.addEventListener('mousemove', function (e) {
+          if (isDragging) {
+            const x = e.clientX - offsetX;
+            const y = e.clientY - offsetY;
+
+            element.style.left = x + 'px';
+            element.style.top = y + 'px';
+          }
+        });
+
+        document.addEventListener('mouseup', function () {
+          isDragging = false;
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="column">
+    <div class="draggable">
+      <label contenteditable="true">Editable Label 1</label>
+      <input type="text">
+    </div>
+    <div class="draggable">
+      <label contenteditable="true">Editable Label 2</label>
+      <input type="text">
+    </div>
+  </div>
+
+  <div class="column">
+    <div class="draggable">
+      <label contenteditable="true">Editable Label 3</label>
+      <input type="text">
+    </div>
+    <div class="draggable">
+      <label contenteditable="true">Editable Label 4</label>
+      <input type="text">
+    </div>
+  </div>
+</body>
+</html>

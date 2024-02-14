@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block body_block %}
+{% load static %}
+<div class="container-fluid">
+    <div class="app-content pt-3 p-md-3 p-lg-4">
+        <div class="container-xl">
+            <h5>Screen customize version</h5>
+            <a href="/screen_version_s1/{{screen_id}}/" class="btn btn-primary" style="float: right;">Add Customizr screen</a>
+            <br><br>
+            <div class="card col-md-12  p-3">
+                <div class="form-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>S.no</th>
+                                <th>Screen Version name</th>
+                                <th>User Type</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data in screen_version_records %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{data.verion_name}}</td>
+                                <td>{{data.user_type.user_type}}</td>
+                                <td><a href="/screen_preview/{{data.id}}/" class="btn btn-info">View</a></td>
+
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
+{% block script_block %}
+{% endblock %}
